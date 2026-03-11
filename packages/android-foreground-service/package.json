@@ -1,6 +1,6 @@
 {
-  "name": "@capawesome-team/capacitor-android-foreground-service",
-  "version": "8.0.1",
+  "name": "@genio-learn/capacitor-android-foreground-service",
+  "version": "8.0.1-genio.1",
   "description": "Capacitor plugin to run a foreground service on Android.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -15,7 +15,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/capawesome-team/capacitor-plugins.git"
+    "url": "git+https://github.com/genio-learn/capacitor-plugins.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/genio-learn"
   },
   "bugs": {
     "url": "https://github.com/capawesome-team/capacitor-plugins/issues"
