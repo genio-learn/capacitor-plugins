@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -27,6 +28,8 @@ public class AndroidForegroundService extends Service {
             String action = intent.getAction();
             Bundle extras = intent.getExtras();
             String channelId = extras.getString("channelId", ForegroundService.DEFAULT_NOTIFICATION_CHANNEL_ID);
+            String deepLinkUrl = extras.getString("deepLinkUrl");
+            String activityClass = extras.getString("activityClass");
             Bundle notificationBundle = extras.getBundle("notification");
             String body = notificationBundle.getString("body");
             int id = notificationBundle.getInt("id");
@@ -36,7 +39,7 @@ public class AndroidForegroundService extends Service {
             ArrayList<Bundle> buttonsBundle = notificationBundle.getParcelableArrayList("buttons");
             int serviceType = notificationBundle.getInt("serviceType", 0);
 
-            PendingIntent contentIntent = buildContentIntent(id);
+            PendingIntent contentIntent = buildContentIntent(id, deepLinkUrl, activityClass);
             Notification.Builder builder;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 builder = new Notification.Builder(getApplicationContext(), channelId);
@@ -76,9 +79,21 @@ public class AndroidForegroundService extends Service {
         return START_STICKY;
     }
 
-    private PendingIntent buildContentIntent(int id) {
-        String packageName = getApplicationContext().getPackageName();
-        Intent intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(packageName);
+    private PendingIntent buildContentIntent(int id, @Nullable String deepLinkUrl, @Nullable String activityClass) {
+        Intent intent;
+        if (deepLinkUrl != null && activityClass != null) {
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(deepLinkUrl));
+            try {
+                intent.setClass(getApplicationContext(), Class.forName(activityClass));
+            } catch (ClassNotFoundException e) {
+                Logger.error(ForegroundServicePlugin.TAG, "Activity class not found: " + activityClass, e);
+                intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(getApplicationContext().getPackageName());
+            }
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        } else {
+            String packageName = getApplicationContext().getPackageName();
+            intent = getApplicationContext().getPackageManager().getLaunchIntentForPackage(packageName);
+        }
         int pendingIntentFlags;
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             pendingIntentFlags = PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_MUTABLE;

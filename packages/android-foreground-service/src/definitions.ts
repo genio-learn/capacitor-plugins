@@ -181,6 +181,19 @@ export interface StartForegroundServiceOptions {
    * @since 6.1.0
    */
   notificationChannelId?: string;
+  /**
+   * A deep link URL to open when the notification is tapped.
+   *
+   * When set, tapping the notification will launch the app with an
+   * `ACTION_VIEW` intent containing this URL, which can be handled
+   * via the `appUrlOpen` event or `App.getLaunchUrl()` from `@capacitor/app`.
+   *
+   * When not set, the notification will simply launch the app's main activity.
+   *
+   * @since 8.1.0
+   * @example "https://example.com/page/123"
+   */
+  deepLinkUrl?: string;
 }
 
 /**

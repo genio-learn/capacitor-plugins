@@ -38,14 +38,15 @@ public class ForegroundService {
         String title,
         ArrayList<Bundle> buttons,
         boolean silent,
-        Integer serviceType
+        Integer serviceType,
+        @Nullable String deepLinkUrl
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (notificationManager.getNotificationChannels().isEmpty()) {
                 createDefaultNotificationChannel();
             }
         }
-        startOrUpdateForegroundService(channelId, body, icon, id, title, buttons, silent, serviceType, false);
+        startOrUpdateForegroundService(channelId, body, icon, id, title, buttons, silent, serviceType, deepLinkUrl, false);
     }
 
     public void updateForegroundService(
@@ -56,9 +57,10 @@ public class ForegroundService {
         String title,
         ArrayList<Bundle> buttons,
         boolean silent,
-        Integer serviceType
+        Integer serviceType,
+        @Nullable String deepLinkUrl
     ) {
-        startOrUpdateForegroundService(channelId, body, icon, id, title, buttons, silent, serviceType, true);
+        startOrUpdateForegroundService(channelId, body, icon, id, title, buttons, silent, serviceType, deepLinkUrl, true);
     }
 
     private void startOrUpdateForegroundService(
@@ -70,6 +72,7 @@ public class ForegroundService {
         ArrayList<Bundle> buttons,
         boolean silent,
         Integer serviceType,
+        @Nullable String deepLinkUrl,
         boolean isUpdate
     ) {
         if (!isUpdate) {
@@ -90,6 +93,10 @@ public class ForegroundService {
         Intent intent = new Intent(context, AndroidForegroundService.class);
         intent.putExtra("notification", notificationBundle);
         intent.putExtra("channelId", channelId != null ? channelId : DEFAULT_NOTIFICATION_CHANNEL_ID);
+        if (deepLinkUrl != null) {
+            intent.putExtra("deepLinkUrl", deepLinkUrl);
+            intent.putExtra("activityClass", plugin.getActivity().getClass().getName());
+        }
 
         if (isUpdate) {
             intent.setAction(ACTION_UPDATE);

@@ -88,6 +88,7 @@ public class ForegroundServicePlugin extends Plugin {
             String title = call.getString("title");
             boolean silent = call.getBoolean("silent", false);
             Integer serviceType = call.getInt("serviceType");
+            String deepLinkUrl = call.getString("deepLinkUrl");
             JSArray buttons = call.getArray("buttons", new JSArray());
 
             ArrayList<Bundle> buttonBundles = new ArrayList<>();
@@ -100,9 +101,9 @@ public class ForegroundServicePlugin extends Plugin {
             }
 
             if (isUpdate) {
-                implementation.updateForegroundService(channelId, body, icon, id, title, buttonBundles, silent, serviceType);
+                implementation.updateForegroundService(channelId, body, icon, id, title, buttonBundles, silent, serviceType, deepLinkUrl);
             } else {
-                implementation.startForegroundService(channelId, body, icon, id, title, buttonBundles, silent, serviceType);
+                implementation.startForegroundService(channelId, body, icon, id, title, buttonBundles, silent, serviceType, deepLinkUrl);
             }
             call.resolve();
         } catch (Exception exception) {
